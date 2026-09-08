@@ -3,171 +3,869 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI司令部</title>
+  <meta name="theme-color" content="#020812">
+  <title>AI司令部 | COMMAND CENTER</title>
 
   <style>
+    :root {
+      --bg: #020812;
+      --panel: rgba(4, 24, 39, 0.82);
+      --panel2: rgba(2, 14, 25, 0.94);
+      --blue: #32c8ff;
+      --blue2: #168bff;
+      --text: #eaf8ff;
+      --muted: #7aaac0;
+      --green: #51f7bd;
+      --border: rgba(50, 200, 255, 0.42);
+    }
+
     * {
       box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #eaf8ff;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Hiragino Sans",
+        "Yu Gothic",
+        sans-serif;
+      color: var(--text);
       background:
-        radial-gradient(circle at 50% 10%, #063a5c 0%, #021725 35%, #000812 75%);
+        radial-gradient(circle at 50% -10%, #0c4e75 0%, #061c2c 25%, #020812 65%),
+        #020812;
+      overflow-x: hidden;
+    }
+
+    /* 背景グリッド */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.12;
+      background-image:
+        linear-gradient(rgba(51, 199, 255, 0.25) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(51, 199, 255, 0.25) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 16s linear infinite;
+    }
+
+    @keyframes gridMove {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(50px);
+      }
+    }
+
+    .shell {
+      width: min(1500px, calc(100% - 28px));
+      margin: 14px auto;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: rgba(0, 8, 17, 0.72);
+      box-shadow:
+        0 0 50px rgba(0, 153, 255, 0.13),
+        inset 0 0 60px rgba(0, 153, 255, 0.04);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      position: relative;
+    }
+
+    .topbar {
+      min-height: 74px;
+      padding: 14px 22px;
       display: flex;
-      justify-content: center;
       align-items: center;
-      padding: 30px 15px;
-    }
-
-    .command-center {
-      width: min(100%, 900px);
-      text-align: center;
-    }
-
-    .logo {
-      font-size: 14px;
-      letter-spacing: 4px;
-      color: #55cfff;
-      margin-bottom: 10px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(36px, 7vw, 64px);
-      text-shadow: 0 0 25px #009dff;
-    }
-
-    .subtitle {
-      color: #8ddfff;
-      margin: 12px 0 40px;
-    }
-
-    .status {
-      border: 1px solid #168fd1;
-      background: rgba(0, 32, 54, 0.65);
-      border-radius: 18px;
-      padding: 18px;
-      margin-bottom: 25px;
-      box-shadow: 0 0 25px rgba(0, 157, 255, 0.15);
-    }
-
-    .status-dot {
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      background: #55f7c5;
-      border-radius: 50%;
-      box-shadow: 0 0 12px #55f7c5;
-      margin-right: 8px;
-    }
-
-    .menu {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 18px;
-    }
-
-    .card {
-      display: block;
-      padding: 28px 18px;
-      color: white;
-      text-decoration: none;
-      border: 1px solid #168fd1;
-      border-radius: 18px;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 1px solid var(--border);
       background: linear-gradient(
-        145deg,
-        rgba(4, 45, 73, 0.9),
-        rgba(1, 17, 30, 0.95)
+        90deg,
+        rgba(0, 29, 48, 0.94),
+        rgba(2, 11, 21, 0.9)
       );
-      transition: 0.2s;
-      box-shadow: inset 0 0 20px rgba(0, 157, 255, 0.05);
     }
 
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: #66d9ff;
-      box-shadow: 0 0 25px rgba(0, 157, 255, 0.35);
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
     }
 
-    .icon {
-      font-size: 34px;
+    .brand-core {
+      width: 44px;
+      height: 44px;
+      border: 2px solid var(--blue);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      box-shadow:
+        0 0 20px rgba(50, 200, 255, 0.75),
+        inset 0 0 16px rgba(50, 200, 255, 0.22);
+      position: relative;
+    }
+
+    .brand-core::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      background: var(--blue);
+      border-radius: 50%;
+      box-shadow: 0 0 14px var(--blue);
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(22px, 4vw, 32px);
+      letter-spacing: 0.08em;
+    }
+
+    .brand small {
       display: block;
-      margin-bottom: 10px;
+      color: var(--blue);
+      letter-spacing: 0.18em;
+      font-size: 10px;
+      margin-top: 3px;
     }
 
-    .card strong {
+    .clock-box {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #date {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+    }
+
+    #clock {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--blue);
+      text-shadow: 0 0 16px rgba(50, 200, 255, 0.7);
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 230px minmax(0, 1fr);
+      min-height: 760px;
+    }
+
+    .sidebar {
+      padding: 20px 14px;
+      border-right: 1px solid var(--border);
+      background: rgba(2, 15, 27, 0.8);
+    }
+
+    .nav-title {
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      margin: 5px 10px 14px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 14px;
+      margin-bottom: 7px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      color: #c7e8f7;
+      text-decoration: none;
+      transition: 0.2s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: white;
+      border-color: var(--border);
+      background: rgba(35, 162, 229, 0.11);
+      box-shadow: 0 0 18px rgba(50, 200, 255, 0.12);
+      transform: translateX(3px);
+    }
+
+    .nav-icon {
+      width: 25px;
+      text-align: center;
       font-size: 20px;
     }
 
-    .card small {
-      display: block;
-      color: #8ddfff;
-      margin-top: 8px;
+    .side-status {
+      margin-top: 24px;
+      padding: 15px;
+      border: 1px solid rgba(81, 247, 189, 0.3);
+      border-radius: 14px;
+      background: rgba(4, 38, 35, 0.3);
+      font-size: 12px;
+      line-height: 1.6;
+      color: #a9d7cf;
     }
 
-    footer {
-      margin-top: 40px;
-      color: #5189a5;
+    .online-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      margin-right: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 14px var(--green);
+      animation: pulse 1.7s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 0.45;
+        transform: scale(0.75);
+      }
+    }
+
+    .main {
+      padding: 24px;
+    }
+
+    .hero {
+      min-height: 310px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      background:
+        radial-gradient(circle at 70% 50%, rgba(0, 169, 255, 0.15), transparent 36%),
+        linear-gradient(135deg, rgba(4, 35, 57, 0.92), rgba(1, 12, 22, 0.96));
+      box-shadow:
+        inset 0 0 45px rgba(0, 174, 255, 0.05),
+        0 0 30px rgba(0, 174, 255, 0.08);
+    }
+
+    .hero-copy {
+      padding: clamp(26px, 5vw, 52px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .eyebrow {
+      color: var(--blue);
+      letter-spacing: 0.18em;
+      font-size: 11px;
+      margin-bottom: 14px;
+    }
+
+    .hero h2 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 56px);
+      line-height: 1.18;
+      letter-spacing: 0.02em;
+    }
+
+    .hero p {
+      color: #9bc8dc;
+      line-height: 1.8;
+      margin: 18px 0 0;
+    }
+
+    .ai-visual {
+      position: relative;
+      min-height: 300px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .orb-ring {
+      position: absolute;
+      border: 1px solid rgba(50, 200, 255, 0.32);
+      border-radius: 50%;
+      animation: rotate 12s linear infinite;
+    }
+
+    .ring1 {
+      width: 250px;
+      height: 250px;
+    }
+
+    .ring2 {
+      width: 195px;
+      height: 195px;
+      animation-direction: reverse;
+      animation-duration: 8s;
+    }
+
+    .ring3 {
+      width: 140px;
+      height: 140px;
+      animation-duration: 5s;
+    }
+
+    .ring1::after,
+    .ring2::after,
+    .ring3::after {
+      content: "";
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      top: 50%;
+      left: -5px;
+      background: var(--blue);
+      box-shadow: 0 0 15px var(--blue);
+    }
+
+    @keyframes rotate {
+      from {
+        transform: rotate(0);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .ai-core {
+      width: 105px;
+      height: 105px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 35%, #d6f8ff, #38cfff 13%, #0784d8 40%, #002341 74%);
+      box-shadow:
+        0 0 25px #0caeff,
+        0 0 80px rgba(0, 174, 255, 0.55);
+      z-index: 2;
+      position: relative;
+      animation: float 3.4s ease-in-out infinite;
+    }
+
+    .ai-core::after {
+      content: "";
+      position: absolute;
+      inset: 24%;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      box-shadow: inset 0 0 18px rgba(255,255,255,.2);
+    }
+
+    @keyframes float {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .core-label {
+      position: absolute;
+      bottom: 24px;
+      z-index: 4;
+      color: var(--blue);
+      letter-spacing: 0.16em;
+      font-size: 11px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 28px 2px 14px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0.06em;
+    }
+
+    .section-head span {
+      color: var(--muted);
       font-size: 12px;
-      letter-spacing: 2px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      position: relative;
+      display: block;
+      text-decoration: none;
+      color: white;
+      padding: 24px;
+      min-height: 175px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background:
+        linear-gradient(145deg, rgba(6, 41, 65, 0.9), rgba(1, 14, 25, 0.95));
+      box-shadow: inset 0 0 25px rgba(0, 174, 255, 0.04);
+      transition: 0.22s ease;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: "";
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      right: -45px;
+      top: -45px;
+      border-radius: 50%;
+      background: rgba(50, 200, 255, 0.06);
+      box-shadow: 0 0 35px rgba(50, 200, 255, 0.12);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(99, 222, 255, 0.95);
+      box-shadow:
+        0 0 28px rgba(0, 174, 255, 0.18),
+        inset 0 0 25px rgba(0, 174, 255, 0.07);
+    }
+
+    .card-icon {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .card strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .card small {
+      color: #87b7cc;
+      line-height: 1.5;
+    }
+
+    .arrow {
+      position: absolute;
+      bottom: 18px;
+      right: 20px;
+      color: var(--blue);
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .info-panel {
+      padding: 20px;
+      border-radius: 18px;
+      border: 1px solid rgba(50, 200, 255, 0.28);
+      background: rgba(2, 20, 34, 0.78);
+    }
+
+    .info-panel h4 {
+      margin: 0 0 14px;
+      color: #dff7ff;
+      font-size: 15px;
+    }
+
+    .mission {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #a9cddb;
+      padding: 7px 0;
+      font-size: 13px;
+    }
+
+    .check {
+      width: 19px;
+      height: 19px;
+      border: 1px solid rgba(50, 200, 255, 0.65);
+      border-radius: 5px;
+      display: grid;
+      place-items: center;
+      color: var(--blue);
+      font-size: 11px;
+      flex: 0 0 auto;
+    }
+
+    .future-message {
+      color: #8ab9ca;
+      line-height: 1.8;
+      font-size: 13px;
+    }
+
+    .footer {
+      padding: 18px;
+      text-align: center;
+      color: #376b83;
+      font-size: 10px;
+      letter-spacing: 0.24em;
+      border-top: 1px solid rgba(50, 200, 255, 0.13);
+    }
+
+    @media (max-width: 900px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .ai-visual {
+        min-height: 250px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .bottom-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main {
+        padding: 15px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .shell {
+        width: calc(100% - 12px);
+        margin: 6px auto;
+        border-radius: 18px;
+      }
+
+      .topbar {
+        padding: 12px 14px;
+      }
+
+      .brand h1 {
+        font-size: 20px;
+      }
+
+      .brand small {
+        font-size: 8px;
+      }
+
+      #clock {
+        font-size: 20px;
+      }
+
+      #date {
+        font-size: 9px;
+      }
+
+      .hero-copy {
+        padding: 27px 22px;
+      }
+
+      .hero p {
+        font-size: 14px;
+      }
+
+      .orb-ring.ring1 {
+        width: 200px;
+        height: 200px;
+      }
+
+      .orb-ring.ring2 {
+        width: 150px;
+        height: 150px;
+      }
+
+      .orb-ring.ring3 {
+        width: 105px;
+        height: 105px;
+      }
+
+      .ai-core {
+        width: 80px;
+        height: 80px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <main class="command-center">
+  <div class="shell">
 
-    <div class="logo">PERSONAL AI COMMAND CENTER</div>
+    <header class="topbar">
 
-    <h1>AI司令部</h1>
+      <div class="brand">
+        <div class="brand-core"></div>
 
-    <p class="subtitle">
-      家族の今を、より良い未来へ。
-    </p>
+        <div>
+          <h1>AI司令部</h1>
+          <small>PERSONAL AI COMMAND CENTER</small>
+        </div>
+      </div>
 
-    <div class="status">
-      <span class="status-dot"></span>
-      SYSTEM ONLINE — ベイマックス待機中
+      <div class="clock-box">
+        <div id="date">----.--.--</div>
+        <div id="clock">--:--:--</div>
+      </div>
+
+    </header>
+
+
+    <div class="content">
+
+      <aside class="sidebar">
+
+        <div class="nav-title">COMMAND MENU</div>
+
+        <a class="nav-link active" href="#">
+          <span class="nav-icon">⌂</span>
+          ホーム
+        </a>
+
+        <a class="nav-link"
+           href="https://docs.google.com/spreadsheets/d/1T7EmhOaq0zO5VCE5UoJAHYjg3LbC9vf74RZZKuGE8do/edit?gid=2129054345#gid=2129054345"
+           target="_blank">
+          <span class="nav-icon">🤖</span>
+          AI司令部
+        </a>
+
+        <a class="nav-link"
+           href="https://kan6417ris-afk.github.io/-/"
+           target="_blank">
+          <span class="nav-icon">🏠</span>
+          家計管理部
+        </a>
+
+        <a class="nav-link"
+           href="https://docs.google.com/spreadsheets/d/1T7EmhOaq0zO5VCE5UoJAHYjg3LbC9vf74RZZKuGE8do/edit?gid=2129054345#gid=2129054345"
+           target="_blank">
+          <span class="nav-icon">📈</span>
+          資産管理室
+        </a>
+
+        <div class="side-status">
+          <span class="online-dot"></span>
+          SYSTEM ONLINE
+          <br><br>
+          AI司令部 Ver.2
+          <br>
+          All systems operational.
+        </div>
+
+      </aside>
+
+
+      <main class="main">
+
+        <section class="hero">
+
+          <div class="hero-copy">
+
+            <div class="eyebrow">
+              WELCOME BACK
+            </div>
+
+            <h2>
+              おかえりなさい。<br>
+              今日も、一歩前へ。
+            </h2>
+
+            <p>
+              家計・資産・AI・家族の未来をひとつの司令部から。<br>
+              小さな積み重ねが、大きな未来につながる。
+            </p>
+
+          </div>
+
+
+          <div class="ai-visual">
+
+            <div class="orb-ring ring1"></div>
+            <div class="orb-ring ring2"></div>
+            <div class="orb-ring ring3"></div>
+
+            <div class="ai-core"></div>
+
+            <div class="core-label">
+              AI COMPANION CORE
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <div class="section-head">
+          <h3>COMMAND MODULES</h3>
+          <span>主要システム</span>
+        </div>
+
+
+        <section class="cards">
+
+          <a class="card"
+             href="https://docs.google.com/spreadsheets/d/1T7EmhOaq0zO5VCE5UoJAHYjg3LbC9vf74RZZKuGE8do/edit?gid=2129054345#gid=2129054345"
+             target="_blank">
+
+            <div class="card-icon">🤖</div>
+
+            <strong>AI司令部</strong>
+
+            <small>
+              家計・配当・AI活用の状況を確認
+            </small>
+
+            <span class="arrow">→</span>
+
+          </a>
+
+
+          <a class="card"
+             href="https://kan6417ris-afk.github.io/-/"
+             target="_blank">
+
+            <div class="card-icon">🏠</div>
+
+            <strong>家計管理部</strong>
+
+            <small>
+              毎日の支出入力と今月の家計を管理
+            </small>
+
+            <span class="arrow">→</span>
+
+          </a>
+
+
+          <a class="card"
+             href="https://docs.google.com/spreadsheets/d/1T7EmhOaq0zO5VCE5UoJAHYjg3LbC9vf74RZZKuGE8do/edit?gid=2129054345#gid=2129054345"
+             target="_blank">
+
+            <div class="card-icon">📈</div>
+
+            <strong>資産管理室</strong>
+
+            <small>
+              資産形成・配当・FIREへの進捗を確認
+            </small>
+
+            <span class="arrow">→</span>
+
+          </a>
+
+        </section>
+
+
+        <section class="bottom-grid">
+
+          <div class="info-panel">
+
+            <h4>今日のミッション</h4>
+
+            <div class="mission">
+              <span class="check">✓</span>
+              AI司令部を確認する
+            </div>
+
+            <div class="mission">
+              <span class="check"></span>
+              家計入力を確認する
+            </div>
+
+            <div class="mission">
+              <span class="check"></span>
+              次の一歩を決める
+            </div>
+
+          </div>
+
+
+          <div class="info-panel">
+
+            <h4>MESSAGE FROM AI CORE</h4>
+
+            <div class="future-message">
+              今日できる小さな一歩を積み重ねよう。<br>
+              家族の「やりたい」を、少しずつ形にしていく。<br><br>
+
+              <span style="color:#32c8ff;">
+                SMALL STEPS · BIG FUTURES
+              </span>
+            </div>
+
+          </div>
+
+        </section>
+
+      </main>
+
     </div>
 
-    <div class="menu">
 
-      <a class="card"
-         href="https://docs.google.com/spreadsheets/d/1T7EmhOaq0zO5VCE5UoJAHYjg3LbC9vf74RZZKuGE8do/edit?gid=2129054345#gid=2129054345"
-         target="_blank">
-        <span class="icon">🤖</span>
-        <strong>AI司令部</strong>
-        <small>データ・未来を見える化</small>
-      </a>
-
-      <a class="card"
-         href="https://kan6417ris-afk.github.io/-/"
-         target="_blank">
-        <span class="icon">🏠</span>
-        <strong>家計管理部</strong>
-        <small>今月の家計を管理</small>
-      </a>
-
-      <a class="card"
-         href="https://docs.google.com/spreadsheets/d/1T7EmhOaq0zO5VCE5UoJAHYjg3LbC9vf74RZZKuGE8do/edit?gid=2129054345#gid=2129054345"
-         target="_blank">
-        <span class="icon">📈</span>
-        <strong>資産管理室</strong>
-        <small>資産形成・配当・FIRE</small>
-      </a>
-
-    </div>
-
-    <footer>
-      SMALL STEPS · BIG FUTURES
+    <footer class="footer">
+      AI COMMAND CENTER · SYSTEM ONLINE · ALWAYS WITH YOU
     </footer>
 
-  </main>
+  </div>
+
+
+  <script>
+
+    function updateClock() {
+
+      const now = new Date();
+
+      const timeFormatter =
+        new Intl.DateTimeFormat("ja-JP", {
+          timeZone: "Asia/Tokyo",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false
+        });
+
+      const dateFormatter =
+        new Intl.DateTimeFormat("ja-JP", {
+          timeZone: "Asia/Tokyo",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          weekday: "short"
+        });
+
+      document.getElementById("clock").textContent =
+        timeFormatter.format(now);
+
+      document.getElementById("date").textContent =
+        dateFormatter.format(now);
+    }
+
+    updateClock();
+
+    setInterval(updateClock, 1000);
+
+  </script>
 
 </body>
 </html>

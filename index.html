@@ -738,7 +738,7 @@
   <div class="card">
     <div class="card-icon">💰</div>
     <strong>今月支出</strong>
-    <p>¥134,008</p>
+    <p id="monthly-spend">読み込み中...</p>
   </div>
 </section>
 
@@ -893,5 +893,20 @@
 
   </script>
 
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzQKIlQp01UoIi3oglrDv01jdOCFyZ79k92wWIR4KRggmTlaQ8rZiisUHoPYFUTsgwq4w/exec";
+
+  fetch(API_URL)
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById("monthly-spend").textContent =
+        "¥" + Number(data.monthlySpend).toLocaleString("ja-JP");
+    })
+    .catch(error => {
+      console.error("COMMAND STATUS取得エラー:", error);
+      document.getElementById("monthly-spend").textContent = "取得エラー";
+    });
+</script>
+  
 </body>
 </html>

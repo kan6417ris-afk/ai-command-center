@@ -920,7 +920,7 @@
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbzQKIlQp01UoIi3oglrDv01jdOCFyZ79k92wWIR4KRggmTlaQ8rZiisUHoPYFUTsgwq4w/exec";
 
-  ffetch(API_URL)
+  window.fetch(API_URL)
   .then(response => response.json())
   .then(data => {
     document.getElementById("monthly-spend").textContent =

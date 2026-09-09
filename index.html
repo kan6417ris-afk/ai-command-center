@@ -765,7 +765,18 @@
     <p id="side-income">読み込み中...</p>
   </div>
 </section>
+        <!-- BAYMAX BRIEFING -->
+<div class="section-head">
+  <h3>🤖 BAYMAX BRIEFING</h3>
+  <span>AI DAILY REPORT</span>
+</div>
 
+<section class="card">
+  <strong>本日のブリーフィング</strong>
+  <p id="baymax-briefing">
+  司令部のデータを分析中...
+</p>
+</section>
         <div class="section-head">
           <h3>COMMAND MODULES</h3>
           <span>主要システム</span>
@@ -937,6 +948,34 @@
 
     document.getElementById("side-income").textContent =
       "¥" + Number(data.sideIncome).toLocaleString("ja-JP");
+  const fireRate = Number(data.fireRate) * 100;
+const monthlySpend = Number(data.monthlySpend);
+const noteCount = Number(data.noteCount);
+const sideIncome = Number(data.sideIncome);
+
+let briefing = "";
+
+if (fireRate >= 100) {
+  briefing += "🔥 FIRE目標資産を達成しています。<br>";
+} else {
+  briefing += `🔥 FIRE進捗は ${fireRate.toFixed(1)}% です。<br>`;
+}
+
+briefing +=
+  `💰 今月支出は ¥${monthlySpend.toLocaleString("ja-JP")} です。<br>`;
+
+briefing +=
+  `📝 NOTEの記事数は現在 ${noteCount}本 です。<br>`;
+
+if (sideIncome > 0) {
+  briefing +=
+    `💼 副業収益は ¥${sideIncome.toLocaleString("ja-JP")} です。`;
+} else {
+  briefing +=
+    "💼 副業収益は現在 ¥0。次の収益化アクションを進めましょう。";
+}
+
+document.getElementById("baymax-briefing").innerHTML = briefing;
   })
   .catch(error => {
     console.error("COMMAND STATUS取得エラー:", error);

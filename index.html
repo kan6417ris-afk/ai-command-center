@@ -740,6 +740,30 @@
     <strong>今月支出</strong>
     <p id="monthly-spend">読み込み中...</p>
   </div>
+
+  <div class="card">
+    <div class="card-icon">💎</div>
+    <strong>総資産</strong>
+    <p id="total-assets">読み込み中...</p>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">🔥</div>
+    <strong>FIRE進捗</strong>
+    <p id="fire-rate">読み込み中...</p>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">📝</div>
+    <strong>NOTE記事数</strong>
+    <p id="note-count">読み込み中...</p>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">💼</div>
+    <strong>副業収益</strong>
+    <p id="side-income">読み込み中...</p>
+  </div>
 </section>
 
         <div class="section-head">
@@ -896,16 +920,27 @@
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbzQKIlQp01UoIi3oglrDv01jdOCFyZ79k92wWIR4KRggmTlaQ8rZiisUHoPYFUTsgwq4w/exec";
 
-  fetch(API_URL)
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById("monthly-spend").textContent =
-        "¥" + Number(data.monthlySpend).toLocaleString("ja-JP");
-    })
-    .catch(error => {
-      console.error("COMMAND STATUS取得エラー:", error);
-      document.getElementById("monthly-spend").textContent = "取得エラー";
-    });
+  ffetch(API_URL)
+  .then(response => response.json())
+  .then(data => {
+    document.getElementById("monthly-spend").textContent =
+      "¥" + Number(data.monthlySpend).toLocaleString("ja-JP");
+
+    document.getElementById("total-assets").textContent =
+      "¥" + Number(data.totalAssets).toLocaleString("ja-JP");
+
+    document.getElementById("fire-rate").textContent =
+      (Number(data.fireRate) * 100).toFixed(1) + "%";
+
+    document.getElementById("note-count").textContent =
+      Number(data.noteCount).toLocaleString("ja-JP") + "本";
+
+    document.getElementById("side-income").textContent =
+      "¥" + Number(data.sideIncome).toLocaleString("ja-JP");
+  })
+  .catch(error => {
+    console.error("COMMAND STATUS取得エラー:", error);
+  });
 </script>
   
 </body>

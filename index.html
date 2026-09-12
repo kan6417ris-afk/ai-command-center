@@ -777,6 +777,18 @@
   司令部のデータを分析中...
 </p>
 </section>
+        <!-- TODAY'S MISSION -->
+<div class="section-head">
+  <h3>🎯 TODAY'S MISSION</h3>
+  <span>RECOMMENDED ACTION</span>
+</div>
+
+<section class="card">
+  <strong>本日の優先ミッション</strong>
+  <p id="today-mission">
+    ミッションを選定中...
+  </p>
+</section>
         <div class="section-head">
           <h3>COMMAND MODULES</h3>
           <span>主要システム</span>
@@ -964,8 +976,17 @@ if (fireRate >= 100) {
 briefing +=
   `💰 今月支出は ¥${monthlySpend.toLocaleString("ja-JP")} です。<br>`;
 
-briefing +=
-  `📝 NOTEの記事数は現在 ${noteCount}本 です。<br>`;
+const noteMonthly = Number(data.noteMonthly);
+const noteGoal = Number(data.noteGoal);
+const noteRemaining = Math.max(noteGoal - noteMonthly, 0);
+
+if (noteMonthly >= noteGoal) {
+  briefing +=
+    `📝 今月のNOTEは ${noteMonthly}/${noteGoal}本。月間目標を達成しています。<br>`;
+} else {
+  briefing +=
+    `📝 今月のNOTEは ${noteMonthly}/${noteGoal}本。あと${noteRemaining}本です。<br>`;
+}
 
 if (sideIncome > 0) {
   briefing +=
@@ -974,7 +995,17 @@ if (sideIncome > 0) {
   briefing +=
     "💼 副業収益は現在 ¥0。次の収益化アクションを進めましょう。";
 }
+let mission = "";
 
+if (noteMonthly < noteGoal) {
+  mission = `📝 NOTE記事を1本進める。今月あと${noteRemaining}本です。`;
+} else if (sideIncome <= 0) {
+  mission = "💼 副業の収益化アクションを1つ進める。";
+} else {
+  mission = "🏠 家計状況を確認し、次の改善ポイントを1つ決める。";
+}
+
+document.getElementById("today-mission").textContent = mission;
 document.getElementById("baymax-briefing").innerHTML = briefing;
   })
   .catch(error => {

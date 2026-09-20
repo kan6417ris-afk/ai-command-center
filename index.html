@@ -1005,8 +1005,8 @@ if (noteMonthly < noteGoal) {
   mission = "🏠 家計状況を確認し、次の改善ポイントを1つ決める。";
 }
 
-document.getElementById("today-mission").textContent = mission;
-document.getElementById("baymax-briefing").innerHTML = briefing;
+document.getElementById("today-mission").textContent = data.aiMission;
+document.getElementById("baymax-briefing").textContent = data.aiBriefing;
   })
   .catch(error => {
     console.error("COMMAND STATUS取得エラー:", error);

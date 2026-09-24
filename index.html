@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#020812">
   <title>AI司令部 | COMMAND CENTER</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
     :root {
@@ -654,10 +655,43 @@
         height: 80px;
       }
     }
+
+    /* PROJECT ARC SECURE — Google sign-in gate */
+    #arc-app[hidden] { display: none !important; }
+    .auth-gate {
+      min-height: 100vh; display: grid; place-items: center; padding: 24px;
+      background: radial-gradient(circle at 50% 20%, #0c4e75 0%, #061c2c 28%, #020812 68%);
+    }
+    .auth-panel {
+      width: min(520px, 100%); padding: 34px; text-align: center;
+      border: 1px solid var(--border); border-radius: 22px;
+      background: rgba(0, 8, 17, .88); box-shadow: 0 0 50px rgba(0,153,255,.16);
+    }
+    .auth-orb {
+      width: 82px; height: 82px; margin: 0 auto 20px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #d6f8ff, #38cfff 13%, #0784d8 40%, #002341 74%);
+      box-shadow: 0 0 25px #0caeff, 0 0 70px rgba(0,174,255,.5);
+    }
+    .auth-panel h2 { margin: 0; letter-spacing: .12em; }
+    .auth-panel p { color: var(--muted); line-height: 1.7; }
+    #google-signin { display: flex; justify-content: center; margin-top: 24px; }
+    #auth-error { min-height: 1.5em; margin-top: 16px; color: #ff9d9d; font-size: 13px; }
   </style>
 </head>
 
 <body>
+  <section id="auth-gate" class="auth-gate">
+    <div class="auth-panel">
+      <div class="auth-orb"></div>
+      <div class="eyebrow">PROJECT ARC · SECURE ACCESS</div>
+      <h2>ARC SYSTEM</h2>
+      <p>Googleアカウントで認証してください。<br>許可されたテストユーザーのみログインできます。</p>
+      <div id="google-signin"></div>
+      <div id="auth-error"></div>
+    </div>
+  </section>
+
+  <div id="arc-app" hidden>
 
   <div class="shell">
 
@@ -929,7 +963,46 @@
     </footer>
 
   </div>
+  </div><!-- /#arc-app -->
 
+
+
+<script>
+  const GOOGLE_CLIENT_ID = "55474551167-7ias6igt2gds2f7v99bh9iuo5nhbh8lo.apps.googleusercontent.com";
+
+  function handleGoogleCredential(response) {
+    if (!response || !response.credential) {
+      document.getElementById("auth-error").textContent = "Google認証に失敗しました。もう一度お試しください。";
+      return;
+    }
+
+    // STEP 1: Googleが発行したIDトークンを取得し、ポータル表示を解放する。
+    // STEP 2でこのトークンをGASへ送り、サーバー側検証後のみ個人データを返す構成へ変更する。
+    window.ARC_ID_TOKEN = response.credential;
+    document.getElementById("auth-gate").hidden = true;
+    document.getElementById("arc-app").hidden = false;
+    loadCommandStatus();
+  }
+
+  window.addEventListener("load", () => {
+    if (!window.google || !google.accounts || !google.accounts.id) {
+      document.getElementById("auth-error").textContent = "Google認証サービスを読み込めませんでした。再読み込みしてください。";
+      return;
+    }
+
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredential,
+      auto_select: false,
+      cancel_on_tap_outside: false
+    });
+
+    google.accounts.id.renderButton(
+      document.getElementById("google-signin"),
+      { theme: "outline", size: "large", shape: "pill", text: "signin_with", width: 280 }
+    );
+  });
+</script>
 
   <script>
 
@@ -971,6 +1044,7 @@
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbzQKIlQp01UoIi3oglrDv01jdOCFyZ79k92wWIR4KRggmTlaQ8rZiisUHoPYFUTsgwq4w/exec";
 
+  function loadCommandStatus() {
   window.fetch(API_URL)
   .then(response => response.json())
   .then(data => {
@@ -1039,6 +1113,7 @@ document.getElementById("baymax-briefing").textContent = data.aiBriefing;
   .catch(error => {
     console.error("COMMAND STATUS取得エラー:", error);
   });
+  }
 </script>
   
 </body>

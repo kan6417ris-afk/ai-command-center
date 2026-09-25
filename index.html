@@ -726,7 +726,7 @@
         </a>
 
         <a class="nav-link"
-           href="https://chatgpt.com/g/g-p-6a9ccdbe2ef08191bce632d235f3996b-aisi-ling-bu/c/6a9ccdc3-dcd8-83ee-afda-748f1bfbbcbb"2129054345"
+           href="https://chatgpt.com/g/g-p-6a9ccdbe2ef08191bce632d235f3996b-aisi-ling-bu/c/6a9ccdc3-dcd8-83ee-afda-748f1bfbbcbb"
            target="_blank">
           <span class="nav-icon">🤖</span>
           AI司令部
@@ -969,24 +969,69 @@
 
 <script>
   const GOOGLE_CLIENT_ID = "55474551167-7ias6igt2gds2f7v99bh9iuo5nhbh8lo.apps.googleusercontent.com";
+  const ARC_SECURE_API_URL = "https://script.google.com/macros/s/AKfycbwzp9ELJbYXsIAASoXmDZKt7UrFi988zAfChWMB5fpNpiYBmEf8U-IY2NoyDDLYeaH6cQ/exec";
 
-  function handleGoogleCredential(response) {
+  function setAuthError(message) {
+    document.getElementById("auth-error").textContent = message || "";
+  }
+
+  async function handleGoogleCredential(response) {
     if (!response || !response.credential) {
-      document.getElementById("auth-error").textContent = "Google認証に失敗しました。もう一度お試しください。";
+      setAuthError("Google認証に失敗しました。もう一度お試しください。");
       return;
     }
 
-    // STEP 1: Googleが発行したIDトークンを取得し、ポータル表示を解放する。
-    // STEP 2でこのトークンをGASへ送り、サーバー側検証後のみ個人データを返す構成へ変更する。
-    window.ARC_ID_TOKEN = response.credential;
-    document.getElementById("auth-gate").hidden = true;
-    document.getElementById("arc-app").hidden = false;
-    loadCommandStatus();
+    setAuthError("ARCサーバーで認証中...");
+
+    try {
+      const body = new URLSearchParams();
+      body.set("idToken", response.credential);
+
+      const apiResponse = await fetch(ARC_SECURE_API_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "text/plain;charset=utf-8"
+  },
+  body: JSON.stringify({
+    idToken: response.credential
+  })
+});
+
+      const result = await apiResponse.json();
+      if (!result || result.ok !== true || !result.data) {
+        throw new Error((result && result.error) || "認証されたデータを取得できませんでした。");
+      }
+
+      renderCommandStatus(result.data);
+      document.getElementById("auth-gate").hidden = true;
+      document.getElementById("arc-app").hidden = false;
+      setAuthError("");
+    } catch (error) {
+      console.error("ARC SECURE認証エラー:", error);
+      setAuthError("ARCサーバー認証に失敗しました。ログインをやり直してください。");
+    }
+  }
+
+  function renderCommandStatus(data) {
+    document.getElementById("monthly-spend").textContent =
+      "¥" + Number(data.monthlySpend || 0).toLocaleString("ja-JP");
+    document.getElementById("total-assets").textContent =
+      "¥" + Number(data.totalAssets || 0).toLocaleString("ja-JP");
+    document.getElementById("fire-rate").textContent =
+      (Number(data.fireRate || 0) * 100).toFixed(1) + "%";
+    document.getElementById("note-count").textContent =
+      Number(data.noteCount || 0).toLocaleString("ja-JP") + "本";
+    document.getElementById("side-income").textContent =
+      "¥" + Number(data.sideIncome || 0).toLocaleString("ja-JP");
+    document.getElementById("today-mission").textContent =
+      data.aiMission || "本日のミッションは未設定です。";
+    document.getElementById("baymax-briefing").textContent =
+      data.aiBriefing || "ARCブリーフィングは未設定です。";
   }
 
   window.addEventListener("load", () => {
     if (!window.google || !google.accounts || !google.accounts.id) {
-      document.getElementById("auth-error").textContent = "Google認証サービスを読み込めませんでした。再読み込みしてください。";
+      setAuthError("Google認証サービスを読み込めませんでした。再読み込みしてください。");
       return;
     }
 
@@ -1004,116 +1049,20 @@
   });
 </script>
 
-  <script>
-
-    function updateClock() {
-
-      const now = new Date();
-
-      const timeFormatter =
-        new Intl.DateTimeFormat("ja-JP", {
-          timeZone: "Asia/Tokyo",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false
-        });
-
-      const dateFormatter =
-        new Intl.DateTimeFormat("ja-JP", {
-          timeZone: "Asia/Tokyo",
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          weekday: "short"
-        });
-
-      document.getElementById("clock").textContent =
-        timeFormatter.format(now);
-
-      document.getElementById("date").textContent =
-        dateFormatter.format(now);
-    }
-
-    updateClock();
-
-    setInterval(updateClock, 1000);
-
-  </script>
-
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzQKIlQp01UoIi3oglrDv01jdOCFyZ79k92wWIR4KRggmTlaQ8rZiisUHoPYFUTsgwq4w/exec";
-
-  function loadCommandStatus() {
-  window.fetch(API_URL)
-  .then(response => response.json())
-  .then(data => {
-    document.getElementById("monthly-spend").textContent =
-      "¥" + Number(data.monthlySpend).toLocaleString("ja-JP");
-
-    document.getElementById("total-assets").textContent =
-      "¥" + Number(data.totalAssets).toLocaleString("ja-JP");
-
-    document.getElementById("fire-rate").textContent =
-      (Number(data.fireRate) * 100).toFixed(1) + "%";
-
-    document.getElementById("note-count").textContent =
-      Number(data.noteCount).toLocaleString("ja-JP") + "本";
-
-    document.getElementById("side-income").textContent =
-      "¥" + Number(data.sideIncome).toLocaleString("ja-JP");
-  const fireRate = Number(data.fireRate) * 100;
-const monthlySpend = Number(data.monthlySpend);
-const noteCount = Number(data.noteCount);
-const sideIncome = Number(data.sideIncome);
-
-let briefing = "";
-
-if (fireRate >= 100) {
-  briefing += "🔥 FIRE目標資産を達成しています。<br>";
-} else {
-  briefing += `🔥 FIRE進捗は ${fireRate.toFixed(1)}% です。<br>`;
-}
-
-briefing +=
-  `💰 今月支出は ¥${monthlySpend.toLocaleString("ja-JP")} です。<br>`;
-
-const noteMonthly = Number(data.noteMonthly);
-const noteGoal = Number(data.noteGoal);
-const noteRemaining = Math.max(noteGoal - noteMonthly, 0);
-
-if (noteMonthly >= noteGoal) {
-  briefing +=
-    `📝 今月のNOTEは ${noteMonthly}/${noteGoal}本。月間目標を達成しています。<br>`;
-} else {
-  briefing +=
-    `📝 今月のNOTEは ${noteMonthly}/${noteGoal}本。あと${noteRemaining}本です。<br>`;
-}
-
-if (sideIncome > 0) {
-  briefing +=
-    `💼 副業収益は ¥${sideIncome.toLocaleString("ja-JP")} です。`;
-} else {
-  briefing +=
-    "💼 副業収益は現在 ¥0。次の収益化アクションを進めましょう。";
-}
-let mission = "";
-
-if (noteMonthly < noteGoal) {
-  mission = `📝 NOTE記事を1本進める。今月あと${noteRemaining}本です。`;
-} else if (sideIncome <= 0) {
-  mission = "💼 副業の収益化アクションを1つ進める。";
-} else {
-  mission = "🏠 家計状況を確認し、次の改善ポイントを1つ決める。";
-}
-
-document.getElementById("today-mission").textContent = data.aiMission;
-document.getElementById("baymax-briefing").textContent = data.aiBriefing;
-  })
-  .catch(error => {
-    console.error("COMMAND STATUS取得エラー:", error);
-  });
+  function updateClock() {
+    const now = new Date();
+    const timeFormatter = new Intl.DateTimeFormat("ja-JP", {
+      timeZone: "Asia/Tokyo", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+    });
+    const dateFormatter = new Intl.DateTimeFormat("ja-JP", {
+      timeZone: "Asia/Tokyo", year: "numeric", month: "2-digit", day: "2-digit", weekday: "short"
+    });
+    document.getElementById("clock").textContent = timeFormatter.format(now);
+    document.getElementById("date").textContent = dateFormatter.format(now);
   }
+  updateClock();
+  setInterval(updateClock, 1000);
 </script>
   
 </body>
